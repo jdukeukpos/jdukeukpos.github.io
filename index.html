@@ -25,12 +25,19 @@
             let windowTop = $(window).scrollTop(),
 //                windowHeight = document.body.clientHeight,
                 windowHeight = window.innerHeight,
-                windowBottom = windowTop + windowHeight
+                windowBottom = windowTop + windowHeight,
+                trueViewportHeight = window.innerHeight
             ;
+
+            if (window.hasOwnProperty(trueViewportHeight)) {
+                trueViewportHeight = window.trueViewportHeight;
+            }
+
             return {
                 'windowTop': windowTop,
                 'windowBottom': windowBottom,
                 'windowHeight': windowHeight,
+                'trueViewportHeight': trueViewportHeight,
                 'document.body.clientHeight': document.body.clientHeight,
                 'window.innerHeight': window.innerHeight
 //                ,
@@ -39,17 +46,21 @@
             }
         }
 
-        function _getBoundingClientRect() {
-            const rect = document.body.getBoundingClientRect();
+        // function _getBoundingClientRect() {
+        //     const rect = document.body.getBoundingClientRect();
+        //
+        //     let data = {};
+        //     for (const key in rect) {
+        //         if (typeof rect[key] !== "function") {
+        //             data[key] = rect[key];
+        //         }
+        //     }
+        //
+        //     return data;
+        // }
 
-            let data = {};
-            for (const key in rect) {
-                if (typeof rect[key] !== "function") {
-                    data[key] = rect[key];
-                }
-            }
-
-            return data;
+        function recordTrueViewportHeight () {
+            window.trueViewportHeight = window.innerHeight;
         }
 
         function doDebug() {
@@ -58,7 +69,7 @@
             $('#debugOutput').html(JSON.stringify(
                 positions,
                 null,
-                '    '
+                '  '
             ));
 
             $('#debugDiv').css({
@@ -67,10 +78,26 @@
             });
         }
 
+        function doDebug2() {
+            let positions = _getElementPositions();
+
+            $('#debugOutput2').html(JSON.stringify(
+                positions,
+                null,
+                '  '
+            ));
+
+            $('#debugDiv2').css({
+                'top': (positions.windowTop + 2) + 'px',
+                'height': (positions.trueViewportHeight - 6) + 'px'
+            });
+        }
+
         $(function () {
 
             let throttledOnScrollCB = throttle(
                 function () {
+                    recordTrueViewportHeight();
                     doDebug()
                 },
                 10
@@ -81,7 +108,16 @@
                 throttledOnScrollCB
             );
 
+            $(window).on(
+                'scroll',
+                function () {
+                    doDebug2()
+                },
+            );
+
+
             doDebug();
+            doDebug2();
         });
     </script>
 </head>
@@ -90,8 +126,12 @@
 <div style="width: 300px; height: 20000px;">
     <div id="debugDiv"
          style="position: absolute; top: 0; left: 2px; width: 10px; height: 10px; background-color: #f00; border: 1px solid #000;"></div>
-    <div style="position: absolute; top: 0; right: 0; width: 3px; height: 20000px; background-color: #0f0;"></div>
-    <pre id="debugOutput" style="display: block; position: fixed; top: 20px; left: 40px; width: 200px;"></pre>
+    <pre id="debugOutput" style="display: block; position: fixed; top: 20px; left: 20px; width: 260px;"></pre>
+
+    <div id="debugDiv2"
+         style="position: absolute; top: 0; right: 2px; width: 10px; height: 10px; background-color: #0f0; border: 1px solid #000;"></div>
+    <pre id="debugOutput2" style="display: block; position: fixed; top: 220px; right: 20px; width: 260px;"></pre>
+
 </div>
 
 </body>
