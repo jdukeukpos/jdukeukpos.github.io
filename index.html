@@ -15,7 +15,24 @@
                 'windowTop': windowTop,
                 'windowBottom': windowBottom,
                 'windowHeight': windowHeight,
+                'document.body.clientHeight': document.body.clientHeight,
+                'window.innerHeight': window.innerHeight,
+                'window.outerHeight': window.outerHeight,
+                'boundingClientRect': _getBoundingClientRect()
             }
+        }
+
+        function _getBoundingClientRect() {
+            const rect = document.body.getBoundingClientRect();
+
+            let data = {};
+            for (const key in rect) {
+                if (typeof rect[key] !== "function") {
+                    data[key] = rect[key];
+                }
+            }
+
+            return data;
         }
 
         function doDebug() {
@@ -47,7 +64,7 @@
 </head>
 <body>
 
-<div style="width: 300px">
+<div style="width: 300px; height: 20000px;">
     <div id="debugDiv"
          style="position: absolute; top: 0; left: 2px; width: 10px; height: 10px; background-color: #f00; border: 1px solid #000;"></div>
     <div style="position: absolute; top: 0; right: 0; width: 3px; height: 20000px; background-color: #0f0;"></div>
