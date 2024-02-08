@@ -6,9 +6,25 @@
     <script src="jquery.min.js"></script>
     <script>
 
+        function throttle(func, delay) {
+            var timer = null;
+
+            return function () {
+                var context = this, args = arguments;
+
+                if (timer == null) {
+                    timer = setTimeout(function () {
+                        func.apply(context, args);
+                        timer = null;
+                    }, delay);
+                }
+            };
+        }
+
         function _getElementPositions() {
             let windowTop = $(window).scrollTop(),
-                windowHeight = document.body.clientHeight,
+//                windowHeight = document.body.clientHeight,
+                windowHeight = window.innerHeight,
                 windowBottom = windowTop + windowHeight
             ;
             return {
@@ -51,11 +67,17 @@
         }
 
         $(function () {
-            $(window).on(
-                'scroll',
+
+            let throttledOnScrollCB = throttle(
                 function () {
                     doDebug()
-                }
+                },
+                10
+            );
+
+            $(window).on(
+                'scroll',
+                throttledOnScrollCB
             );
 
             doDebug();
